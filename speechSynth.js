@@ -7,8 +7,9 @@ synth.onvoiceschanged = function(){
     console.log(voices)
 }
 
+// english options:
 // 65 - google US english
-// voice 66 seems best - google UK english female
+// 66 - seems best - google UK english female
 
 say = null;
 utter = new SpeechSynthesisUtterance(say)

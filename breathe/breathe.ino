@@ -26,6 +26,8 @@ int next = 5;
 int unis = 6;
 
 
+
+
 /*  previ5db   next5db  enter5db
 //String Sprev = "previ5db.wav";
 //String Snext = "next5db.wav";
@@ -60,9 +62,9 @@ String loc = "main";
 int item = 0;
 
 String alarmSound;
-int alarmInterval;
-int alarmRepeats;
-int alarmRemains;
+int alarmInterval=0;
+int alarmRepeats=0;
+int alarmRemains=0;
 
 
 
@@ -73,8 +75,9 @@ void setup()  {
   
   setTime(13,06,00,15,12,2017);
   t = now();
-
-  if (!SD.begin(SD_ChipSelectPin)) {  // see if the card is present and can be initialized:
+  
+  // see if the card is present and can be initialized:
+  if (!SD.begin(SD_ChipSelectPin)) {  
     Serial.println("SD fail");  
     //return;   // don't do anything more if not
   } else Serial.println("SD card OK");
@@ -84,23 +87,43 @@ void setup()  {
   pinMode(prev, INPUT);
   pinMode(next, INPUT);
   pinMode(unis, INPUT);
+
+  char x = String(14).charAt(1);
+
+  Serial.println(x);
+  Serial.println(int(x)-48);
+
   
   //  nmwc  units   tens
-  if (loc=="main") sound.play("mainmenu.wav");  //sound.play("num04.wav");//
+  if (loc=="main") sound.play("okbeep1.wav");//sound.play("mainmenu.wav");
 }
-
+// new sounds:   no.wav    ee  okbeep1 okbeep2  selinpls   selrepls   setting- srynordy
+// tmrwsset tmrdelet
 
 void loop() {
 
   if (digitalRead(unis) == HIGH){
-      
-      delay(500);
-      
-      if (units=="units") units="tens";
-      else units = "units";
 
-      Serial.print("UNITS: "); Serial.println(units);
-      
+      if (loc=="select interval" || loc=="select repeats"){
+        
+          // fro now turn off
+          sound.play("srynordy.wav");
+          return;
+          
+          delay(300);
+          
+          if (units=="units") units="tens";
+          else units = "units";
+    
+          Serial.print("UNITS: "); Serial.println(units);
+
+          // to start choosing numbers from 0 (seems logical)
+          item = 0;
+          
+          sayUnits(units);
+          
+      } else illegal();
+
         
       
       
@@ -109,7 +132,7 @@ void loop() {
       
       
       Serial.println("BACK");
-      exitItem();
+      exitItem(true);
         
       delay(500);
       
@@ -124,12 +147,12 @@ void loop() {
   } else if (digitalRead(prev) == HIGH){ //sound.play("previ5db.wav");
       Serial.println("PREV");
       chooseItem(-1);
-      delay(500);
+      delay(300);
       
   } else if (digitalRead(next) == HIGH){  //sound.play("next5db.wav");
       Serial.println("NEXT");
       chooseItem(1);
-      delay(500);
+      delay(300);
   }
 }
 
@@ -139,6 +162,7 @@ void loop() {
 void chooseItem(int n){
     item+=n;
     
+
     
     if (loc=="main"){
       
@@ -169,7 +193,7 @@ void chooseItem(int n){
 
           saySelection(soundChoices[item]);
 
-              alarmSound = soundChoices[item];
+          // on ENTER choice will be made and announced    
       }
 
       //  reacting on PREV or NEXT
@@ -223,8 +247,8 @@ void chooseItem(int n){
 
           
       }
-    
-    Serial.println("item: ");
+    Serial.println();
+    Serial.print("item: ");
     Serial.print(item);
 
     
@@ -268,7 +292,7 @@ void saySelection(String choice){
 
 
             // in selecting alarm sound   
-            //  soundChoices[]={String("korimako"), String("bowl deep"), String("wood cool")};
+            //soundChoices[]={String("korimako"), String("bowl deep"), String("wood cool")};
             
                     else if (choice==  "korimako"  ){
                                 sound.play("nmkorimk.wav");
@@ -298,30 +322,7 @@ void saySelection(String choice){
 
 
 
-
-void announceLoc(String loc){
-      Serial.println("location to announce: ");
-      Serial.print(loc);
-      Serial.println();
-      
-      if         ( loc=="main"){
-                  sound.play("mainmenu.wav");
-                  delay(1200);
-                  
-      } else if  ( loc=="new timer settings"){
-                  sound.play("ntmrsets.wav");
-                  delay(1500);
-    
-      } else if  ( loc== "choose running timer"){
-                  sound.play("chruntmr.wav");
-                  Serial.println("not set: choose running timer");
-                  delay(1200);
-      }
-
-  
-}
-
-                                      ////  ENTER
+                                      ////     ENTER    ////
 
 
 void enterItem(){
@@ -332,14 +333,16 @@ void enterItem(){
 
         if (item==0){
                         loc="new timer settings";
-          
+                        announceLoc(loc);
         } else if (item==1){
 
-                        loc="choose running timer";
+                        //loc="choose running timer";
+                        sound.play("srynordy.wav");
+                        delay(500);
         }
-        announceLoc(loc);
-        //enterItem();
+        
 
+    //    after ENTER is pressed:
         
     } else if (loc == "new timer settings"){
 
@@ -350,27 +353,94 @@ void enterItem(){
                     
                     // select interval
                     else if (item==1){
+                            item = 0;
                             loc="select interval";
+                            Serial.println("alarm interval: ");
+                            Serial.print(alarmInterval);
                       }
         
                     // select repeats
                     else if (item==2){
+                            item = 0;
                             loc="select repeats";
                       }
         
                     // confirm timer
                     else if (item==3){
-                            loc="confirm timer";
+                            
+                            sound.play("srynordy.wav");
+                            delay(1700);
+                            //item = 0;
+                            //loc="confirm timer";
                       }
                       
-                    announceLoc(loc);  
-      }
+                    announceLoc(loc);
+                    delay(500);
+                    announce1stItem(loc); // saySelection(soundChoices[item]);
+
+                    
+           // after pressed ENTER in 'select sound' confirms the choice
+           
+            } else if (loc=="select sound"){
+      
+                        alarmSound = soundChoices[item];
+                        sound.play("okbeep1.wav");
+                        delay(400);
+                        sound.play("sound-.wav");
+                        delay(600);
+                        saySelection(soundChoices[item]);
+
+                        exitItem(false);
+                        
+                        item=0;
+
+
+          // after pressing ENTER ->
+            } else if (loc=="select interval"){
+
+                      // it already said which num was chosen from array
+                      sound.play("okbeep1.wav");
+                      delay(600);
+
+                      if (units=="units") alarmInterval += intervalChoicesUnits[item];
+                      else alarmInterval += intervalChoicesTens[item];
+
+                      // switch to tens automatically
+                      if (units=="units") {units="tens";         
+                                            sayUnits(units);
+                                            
+                      // units==tens are confirmed                 
+                      } else {
+                        
+                            if (alarmInterval==0){
+      
+                              sound.play("selinpls.wav");
+                              delay(1000);
+                              return;
+                            }
+                            //units = "units";
+                            // sum up what number he chose
+                            sayDigits("alarmInterval");
+                            exitItem(false);
+                      }
+                      item=0;
+                      
+                      // if he presses back, say chosen number /sum up
+                      // after selection announce
+                      
+                      Serial.println("----  alarmInterval: ");
+                      Serial.println(alarmInterval);
+
+                      
+            }
+
+        // when new timer is nofirmed (set) should she repeat its settings?
 }
 
 
                                    /////   EXIT
 
-void exitItem(){
+void exitItem(bool loud){
 
       Serial.println("exit item");
 
@@ -386,20 +456,46 @@ void exitItem(){
                   
       }
 
-      // any of new timer setting subs
+      // after exit:  any of new timer setting subs
       else if (loc=="select sound" || loc=="select interval" || loc=="select repeats" || loc=="confirm timer"){
                   loc = "new timer settings";  
-                  
+
+
+                  if (loc=="select interval" || loc=="select repeats"){
+                          // resets num to 0 (now only option to do so)
+                          item=0;
+
+                          // say interval or repeats set to zero
+                          sound.play("setting-.wav");
+                          delay(500);
+                          sayNumber(0);
+                  }
       }
       
-      announceLoc(loc);
+      if(loud) announceLoc(loc);
   
 }
 
+                    /////////////////////////////////////////////
 
 
+void announce1stItem(String loc){
 
 
+      if (loc=="select sound"){
+                Serial.println();
+                Serial.print("1st item: "); Serial.println(soundChoices[0]);
+                saySelection(soundChoices[0]);  //was: [item]
+                
+            
+      } else if (loc=="select interval" || loc=="select repeats"){
+
+                  sayNumber(0);
+
+                  
+      } else if (loc=="confirm timer"){
+      }
+}
 
 
 
@@ -425,18 +521,90 @@ void sayNumber(int num){
             case 40: sound.play("num40.wav"); break;
             case 50: sound.play("num50.wav"); break;
             case 60: sound.play("num60.wav"); break;
+
+            default: sound.play("num0000.wav");
+                      break;
         }
+        Serial.println("test test");
+        delay(200);
 }
 
 
 
+void sayDigits(String prop){
+      int num;
+      
+      if (prop=="alarmInterval") num = alarmInterval;
+      else num = alarmRepeats;
+
+      if (num>=1 && num<=9){
+
+                    sound.play("setting-.wav");
+                    delay(500);
+                    sayNumber(num);
+      } else if (num>=10 && num<=69){
+
+                    sound.play("setting-.wav");
+                    delay(700);
+
+                    int copy = num;
+                    char one = String(copy).charAt(0);
+                    char two = String(copy).charAt(1);
+
+                    Serial.println("chars divided to pronounce");
+                    Serial.println(one); Serial.println(two);
+
+                    // say them   int(x)-48
+
+                    sayNumber((int(one)-48)*10);
+                    delay(300);
+                    sayNumber(int(two)-48);
+        
+      } else sound.play("ee.wav");
+      
+}
+
+
+void announceLoc(String loc){
+      Serial.println("location to announce: ");
+      Serial.print(loc);
+      Serial.println();
+      
+      if         ( loc=="main"){
+                  sound.play("mainmenu.wav");
+                  delay(1200);
+                  
+      } else if  ( loc=="new timer settings"){
+                  sound.play("ntmrsets.wav");
+                  delay(1500);
+    
+      } else if  ( loc== "choose running timer"){
+                  sound.play("chruntmr.wav");
+                  Serial.println("not set: choose running timer");
+                  delay(1200);
+      }
+
+  
+}
+
+
+void illegal(){
+    delay(150);
+    sound.play("no.wav");
+    delay(300);
+}
 
 
 
+void sayUnits(String uns){
 
-
-
-
+      sound.play("setting-.wav");
+      delay(400);
+      
+      if (uns=="units") sound.play("units.wav");
+      else sound.play("tens.wav");
+      delay(300);
+}
 
 
 

@@ -1,0 +1,21 @@
+notes
+
+
+    https://www.soundsnap.com/search/audio/confirmation/score?page=4
+
+    conf sounds candidates
+
+            used
+            https://www.soundsnap.com/modular_ui_confirm_tonefm_012_wav
+            https://www.soundsnap.com/modular_ui_confirm_tonefm_056_wav
+
+
+            not used yet
+            https://www.soundsnap.com/modular_ui_confirm_tonefm_057_wav
+            https://www.soundsnap.com/modular_ui_confirm_tonefm_061_wav
+            https://www.soundsnap.com/modular_ui_confirm_tonefm_059_wav
+
+            
+
+
+

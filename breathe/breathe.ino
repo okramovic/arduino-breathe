@@ -1,13 +1,12 @@
+//#include <Metro.h>
 #include <pcmConfig.h>
 #include <pcmRF.h>
 #include <TMRpcm.h>
-
 #include <SD.h>
 #include <SPI.h>
 #define SD_ChipSelectPin 53
 
 #include <TimeLib.h>
-
 
 #define Sd2Card card;
 #define SdVolume volume;
@@ -16,29 +15,11 @@
 //#define
 TMRpcm sound;
 
-//#define 
-time_t t;
-
-int back = 2;
-int enter= 3;
-int prev = 4;
-int next = 5;
-int unis = 6;
-
-
-
+int back = 2; int enter= 3; int prev = 4; int next = 5; int unis = 6;
 
 /*  previ5db   next5db  enter5db
-//String Sprev = "previ5db.wav";
-//String Snext = "next5db.wav";
-//String Senter = "enter5db.wav";
-
+//String Sprev = "previ5db.wav"; String Snext = "next5db.wav";String Senter = "enter5db.wav";
 //String names[]={Senter,Sprev,Snext};*/
-/* sound names   
-            bowlde5.wav
-            kori_5db / kori_15
-            woodcool /   wdcl10db
-*/
 
 String addT = "add timer";
 String chooseT = "choose timer";
@@ -61,20 +42,24 @@ int intervalChoicesTens[]={0,10,20,30,40,50,60};
 String loc = "main";
 int item = 0;
 
+String alarmName = "1";
 String alarmSound="";
-int alarmInterval=0;
-int alarmRepeats=0;
-int alarmRemains=0;
+int alarmInterval=1;
+int alarmRepeats=3;
+int alarmRemains=-1;
 
+//#define 
+time_t mySystemTime;
+time_t t1;
 
-
+////////////////////////////////////////////////////////////////////
 void setup()  {
   Serial.begin(9600);
 
   sound.speakerPin = 12;
   
-  setTime(13,06,00,15,12,2017);
-  t = now();
+  setTime(17,02,00,17,12,2017);
+  mySystemTime = now();
   
   // see if the card is present and can be initialized:
   if (!SD.begin(SD_ChipSelectPin)) {  
@@ -87,20 +72,37 @@ void setup()  {
   pinMode(prev, INPUT);
   pinMode(next, INPUT);
   pinMode(unis, INPUT);
-
-  char x = String(14).charAt(1);
-
-  Serial.println(x);
-  Serial.println(int(x)-48);
-
   
   //  nmwc  units   tens
-  if (loc=="main") sound.play("okbeep1.wav");//sound.play("mainmenu.wav");
+  if (loc=="main") sound.play("okbeep1.wav");     // okbeep1    mainmenu
 }
 // new sounds:   no.wav    ee  okbeep1 okbeep2  selinpls   selrepls   setting- srynordy
 // tmrwsset tmrdelet
 
 void loop() {
+  mySystemTime = now();
+  
+  //char state = shouldRing(t1);
+  if (alarmRemains>=0){
+    
+          if ( shouldRing(t1) ==true ){
+                  
+                             Serial.println();
+                             Serial.println("-----------    alarm!!    -----------");
+                             runAlarm(alarmName);
+                             Serial.print("remains "); Serial.println(alarmRemains);
+        
+                             if (alarmRemains==0){
+                                      
+                                    Serial.println();
+                                    Serial.println("-----------  alarm ended  -----------");
+                                    
+                                    resetNewTimerSettings();
+                             }   
+          }  
+  }
+
+  
 
   if (digitalRead(unis) == HIGH){
 
@@ -129,26 +131,26 @@ void loop() {
   else if (digitalRead(back) == HIGH){
       
       
-      Serial.println("BACK");
+      //Serial.println("BACK");
       exitItem(true);
         
       delay(500);
       
   } else if (digitalRead(enter) == HIGH){
       
-      Serial.println("ENTER");
+      //Serial.println("ENTER");
       
       enterItem();
       delay(500);
 
       
   } else if (digitalRead(prev) == HIGH){ //sound.play("previ5db.wav");
-      Serial.println("PREV");
+      //Serial.println("PREV");
       chooseItem(-1);
       delay(300);
       
   } else if (digitalRead(next) == HIGH){  //sound.play("next5db.wav");
-      Serial.println("NEXT");
+      //Serial.println("NEXT");
       chooseItem(1);
       delay(300);
   }
@@ -247,7 +249,7 @@ void chooseItem(int n){
 
           
       }
-    Serial.println();
+
     Serial.print("item now: ");
     Serial.println(item);
 
@@ -259,7 +261,7 @@ void chooseItem(int n){
 
 
 void enterItem(){
-    Serial.println("enter item: ");
+    //Serial.println("enter item: ");
 
     if (loc=="main"){ 
 
@@ -442,10 +444,10 @@ void enterItem(){
 
 void exitItem(bool loud){
 
-      Serial.println("exit item");
+      //Serial.println("exit item");
 
       if (loc=="main"){ 
-              Serial.println("IN MAIN MENU");
+              //Serial.println("IN MAIN MENU");
               
               //announceLoc(loc);
       }
@@ -484,8 +486,8 @@ void announce1stItem(String loc){
 
 
       if (loc=="select sound"){
-                Serial.println();
-                Serial.print("1st item: "); Serial.println(soundChoices[0]);
+                //Serial.println();
+                //Serial.print("1st item: "); Serial.println(soundChoices[0]);
                 saySelection(soundChoices[0]);  //was: [item]
                 
             
@@ -562,15 +564,16 @@ void sayDigits(String prop){
                     delay(300);
                     if (two!='0') sayNumber(int(two)-48);
         
-      } else sound.play("ee.wav");
+      } else { sound.play("ee.wav"); delay(400);
+      }
       
 }
 
 
 void announceLoc(String loc){
-      Serial.println("location to announce: ");
-      Serial.print(loc);
-      Serial.println();
+      Serial.print("location to announce: ");
+      Serial.println(loc);
+      
       
       if         ( loc=="main"){
                   sound.play("mainmenu.wav");
@@ -590,9 +593,9 @@ void announceLoc(String loc){
 }
 
 void saySelection(String choice){
-      Serial.println("saySelection: ");
-      Serial.print(choice);
-      Serial.println();
+      Serial.print("saySelection: ");
+      Serial.println(choice);
+      
 
 
       if (choice=="add timer"){
@@ -718,10 +721,7 @@ void confirmTimer(){
                     sound.play("repeats-.wav"); delay(800);
                     sayDigits("alarmRepeats");
 
-                    sound.play("okbeep1.wav"); delay(400);
                     
-                    loc="main";
-                    announceLoc("main"); 
                     
               Serial.println();
               Serial.println("timer set as follows:");
@@ -729,5 +729,94 @@ void confirmTimer(){
               Serial.println(alarmInterval);
               Serial.println(alarmRepeats);
               Serial.println(alarmRemains);
+
+              setNewTimer();
+}
+
+void setNewTimer(){
+    int milis = alarmInterval * 60L * 1000;
+        //Serial.print("milis: "); //Serial.println(milis);
+        
+    t1 = now();
+    
+          Serial.println("timer set @"); 
+          Serial.print(hour(t1));   Serial.print(" ");
+          Serial.print(minute(t1)); Serial.print(" ");
+          Serial.println(second(t1));
+
+
+          
+    sound.play("okbeep1.wav"); delay(400);
+                    
+    loc="main";
+    announceLoc("main"); 
+
+    //delay(1000);       
+}
+
+
+bool shouldRing(time_t t){
+      // R for ring   D Done  N no
+      
+      int secs; int mins; int hrs;
+      hrs  = hour  (mySystemTime) - hour  (t) *1L;
+      mins = minute(mySystemTime) - minute(t) *1L;
+      secs = second(mySystemTime) - second(t) *1L;
+
+      int secsTotal = hrs*3600 + mins*60 + secs *1L;
+      
+      //Serial.println(secs); 
+      
+      // when it should ring
+      if( secs==0   && alarmRemains>=1){
+        
+                delay(1000); //Serial.println(secsTotal); 
+                
+                int minsDiff = hrs*60 + mins;
+                if (minsDiff % alarmInterval==0){
+                              return true;
+                }
+          
+      } //else if (alarmRemains<=0) return 'D';
+          
+      return false;
+}
+
+
+
+void runAlarm(String alname){      
+      if (alarmSound=="korimako"){ 
+                                alarmRemains--;
+                                sound.play("alkorima.wav");
+                                //delay(5000);
+                                
+      } else if (alarmSound=="bowl deep"){
+                                alarmRemains--;
+                                sound.play("albowdee.wav");
+                                //delay(13000);
+                                
+      } else if (alarmSound=="wood cool"){
+                                alarmRemains--;
+                                sound.play("alwoocoo.wav");
+                                //delay(2500);
+      }
+
+}
+
+void resetNewTimerSettings(){
+    alarmName = "1";
+    //alarmSound="";
+    alarmInterval=0;
+    alarmRepeats=0;
+    alarmRemains=-1;  
+    
+              Serial.println();
+              Serial.println("timer reset to:");
+              Serial.println(alarmSound);
+              Serial.println(alarmInterval);
+              Serial.println(alarmRepeats);
+              Serial.println(alarmRemains);
+
+              
 }
 

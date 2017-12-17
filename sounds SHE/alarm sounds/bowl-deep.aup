@@ -1,0 +1,37 @@
+<?xml version="1.0" standalone="no" ?>
+<!DOCTYPE project PUBLIC "-//audacityproject-1.3.0//DTD//EN" "http://audacity.sourceforge.net/xml/audacityproject-1.3.0.dtd" >
+<project xmlns="http://audacity.sourceforge.net/xml/" projname="bowl-deep_data" version="1.3.0" audacityversion="2.1.0" sel0="0.0000000000" sel1="0.0000000000" vpos="0" h="0.0000000000" zoom="95.0930652390" rate="32000.0" snapto="off" selectionformat="hh:mm:ss + milliseconds">
+	<tags/>
+	<wavetrack name="soundsnap_MYEDIT_WINE_CORK_MALLET_DINGING_ON_SINGING_BOWL_LONG_HOLD" channel="0" linked="1" mute="0" solo="0" height="150" minimized="0" isSelected="1" rate="32000" gain="1.0" pan="0.0">
+		<waveclip offset="0.00000000">
+			<sequence maxsamples="262144" sampleformat="262159" numsamples="419631">
+				<waveblock start="0">
+					<simpleblockfile filename="e00006da.au" len="141607" min="-0.760287" max="0.711944" rms="0.025404"/>
+				</waveblock>
+				<waveblock start="141607">
+					<simpleblockfile filename="e0000536.au" len="142820" min="-0.047232" max="0.046126" rms="0.010157"/>
+				</waveblock>
+				<waveblock start="284427">
+					<simpleblockfile filename="e0000dd6.au" len="135204" min="-0.016067" max="0.01579" rms="0.002411"/>
+				</waveblock>
+			</sequence>
+			<envelope numpoints="0"/>
+		</waveclip>
+	</wavetrack>
+	<wavetrack name="soundsnap_MYEDIT_WINE_CORK_MALLET_DINGING_ON_SINGING_BOWL_LONG_HOLD" channel="1" linked="0" mute="0" solo="0" height="150" minimized="0" isSelected="1" rate="32000" gain="1.0" pan="0.0">
+		<waveclip offset="0.00000000">
+			<sequence maxsamples="262144" sampleformat="262159" numsamples="419631">
+				<waveblock start="0">
+					<simpleblockfile filename="e0000e75.au" len="141607" min="-0.758261" max="0.709393" rms="0.02541"/>
+				</waveblock>
+				<waveblock start="141607">
+					<simpleblockfile filename="e0000b34.au" len="142820" min="-0.04699" max="0.046067" rms="0.010155"/>
+				</waveblock>
+				<waveblock start="284427">
+					<simpleblockfile filename="e000008c.au" len="135204" min="-0.016053" max="0.015622" rms="0.002409"/>
+				</waveblock>
+			</sequence>
+			<envelope numpoints="0"/>
+		</waveclip>
+	</wavetrack>
+</project>
